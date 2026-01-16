@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>House Price Prediction</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Predictor</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #232526 0%, #414345 100%);
+            font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
+            color: #fff;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: rgba(30, 30, 40, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            padding: 40px 32px 32px 32px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        h2 {
+            font-size: 2.2em;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+            color: #00ffe7;
+            text-shadow: 0 0 8px #00ffe7, 0 0 2px #fff;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        label {
+            font-size: 1.1em;
+            color: #ffb86c;
+            margin-bottom: 4px;
+            text-align: left;
+        }
+        input[type="text"] {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: #232526;
+            color: #fff;
+            font-size: 1em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            outline: none;
+            transition: background 0.2s;
+        }
+        input[type="text"]:focus {
+            background: #414345;
+        }
+        input[type="submit"] {
+            background: linear-gradient(90deg, #00ffe7 0%, #ffb86c 100%);
+            color: #232526;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1.1em;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: background 0.2s, color 0.2s;
+        }
+        input[type="submit"]:hover {
+            background: linear-gradient(90deg, #ffb86c 0%, #00ffe7 100%);
+            color: #fff;
+        }
+        .result {
+            margin-top: 28px;
+            font-size: 1.3em;
+            color: #00ffe7;
+            text-shadow: 0 0 6px #00ffe7;
+        }
+        @media (max-width: 500px) {
+            .container {
+                padding: 24px 8px;
+            }
+            h2 {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+    <!-- Orbitron font for retro tech vibes -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h2>House Price Predictor</h2>
+        <form action="/predict" method="post">
+            <label for="area">Area (sq ft):</label>
+            <input type="text" name="area" id="area" required>
+
+            <label for="bedrooms">Bedrooms:</label>
+            <input type="text" name="bedrooms" id="bedrooms" required>
+
+            <label for="bathrooms">Bathrooms:</label>
+            <input type="text" name="bathrooms" id="bathrooms" required>
+
+            <label for="stories">Stories:</label>
+            <input type="text" name="stories" id="stories" required>
+
+            <label for="parking">Parking Spaces:</label>
+            <input type="text" name="parking" id="parking" required>
+
+            <input type="submit" value="Predict">
+        </form>
+        {% if result %}
+            <div class="result">{{ result }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>
+        <h3>Predicted Price: {{ prediction }}</h3>
+    {% endif %}
+</body>
+</html>
