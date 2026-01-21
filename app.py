@@ -1,65 +1,68 @@
-from flask import Flask, render_template, request
-import numpy as np
-from tensorflow.keras.models import load_model
 
-app = Flask(__name__)
+# app.py
+# Flask web app for House Price Prediction
+# Uses scikit-learn model and matches the six features in the form
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import numpy as np
-from tensorflow.keras.models import load_model
+import pandas as pd
 import joblib
-import os
 
 # Initialize Flask app
 app = Flask(__name__)
 
-# Load the trained model
-MODEL_PATH = "model.h5"
-model = load_model(MODEL_PATH)
+# Load the trained model (scikit-learn pipeline)
+MODEL_PATH = "model/house_price_model.pkl"
+model = joblib.load(MODEL_PATH)
 
-# Load the scaler (if used during training)
-SCALER_PATH = "scaler.save"
-if os.path.exists(SCALER_PATH):
-    scaler = joblib.load(SCALER_PATH)
-else:
-    scaler = None
 
+# Home route: render the main page with the input form
 @app.route("/")
 def home():
-    """Render the main page with the input form."""
     return render_template("index.html")
+
+
+# Predict route: receive input, preprocess, predict, and render result
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    """
-    Receive input from the form, preprocess, predict house price, and render result.
-    """
     try:
-        # Get form data
-        area = float(request.form["area"])
-        bedrooms = int(request.form["bedrooms"])
-        bathrooms = int(request.form["bathrooms"])
-        stories = int(request.form["stories"])
-        parking = int(request.form["parking"])
+        # Get form data for the six model features
+        overallqual = int(request.form["OverallQual"])
+        grlivarea = float(request.form["GrLivArea"])
+        totalbsmtsf = float(request.form["TotalBsmtSF"])
+        garagecars = int(request.form["GarageCars"])
+        bedroomabvgr = int(request.form["BedroomAbvGr"])
+        neighborhood = request.form["Neighborhood"].strip()
 
-        # Prepare input for model
-        input_features = np.array([[area, bedrooms, bathrooms, stories, parking]])
 
-        # Scale input if scaler exists
-        if scaler:
-            input_features = scaler.transform(input_features)
+        # Prepare input for model as a DataFrame with correct columns
+        input_features = pd.DataFrame([{
+            'OverallQual': overallqual,
+            'GrLivArea': grlivarea,
+            'TotalBsmtSF': totalbsmtsf,
+            'GarageCars': garagecars,
+            'BedroomAbvGr': bedroomabvgr,
+            'Neighborhood': neighborhood
+        }])
 
-        # Predict price
-        predicted_price = model.predict(input_features)[0][0]
+        # Predict price using the loaded pipeline
+        predicted_price = model.predict(input_features)[0]
 
-        # Format result
-        result = f"Estimated House Price: ${predicted_price:,.2f}"
+        # Format result for display (rounded, comma separated)
+        result = f"{predicted_price:,.0f}"
+        # If AJAX/JS request, return JSON
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'result': result})
     except Exception as e:
         result = f"Error: {str(e)}"
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'result': result})
 
+    # Fallback: render template for normal POST
     return render_template("index.html", result=result)
 
-# Run the app
+
+# Run the app (for local testing only; use gunicorn or similar for deployment)
 if __name__ == "__main__":
-    # For local testing only; use gunicorn for deployment
     app.run(debug=True)
